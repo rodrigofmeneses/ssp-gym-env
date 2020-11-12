@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 class SSP(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    NUM_NODES = 5
-    DENSITY = 1
-    MAX_STEPS = 10
+    NUM_NODES = 10
+    DENSITY = 0.7
+    MAX_STEPS = 50
 
     def __init__(self):
         self.action_space = gym.spaces.Discrete(self.NUM_NODES)
@@ -25,7 +25,7 @@ class SSP(gym.Env):
         self.init_states.remove(self.goal)
 
         self.terminal_states = [self.goal]
-
+        self._createModel()
         self.reset()
 
     def reset(self):
@@ -37,8 +37,6 @@ class SSP(gym.Env):
         """
 
         self.count = 0
-        self._createModel()
-
 
         self.state = self.np_random.choice(self.init_states)
         self.reward = 0
@@ -89,13 +87,15 @@ class SSP(gym.Env):
             
             if action in self.possibleActions(self.state):
                 self.reward = -self.rewards[action, self.state]
-                self.state = np.random.choice(self.NUM_NODES, 
-                                          p=self.transitions_prob[action, self.state])
-                if self.state in self.terminal_states:
+                if action in self.terminal_states:
                     self.done = True
-                    self.reward += 100
+                    self.reward += 1
+                    self.state = action
                 else:
-                    self.reward -= 1
+                    self.state = np.random.choice(self.NUM_NODES, 
+                                            p=self.transitions_prob[action, self.state])
+            else:
+                self.reward = -100
         try:
             assert self.observation_space.contains(self.state)
         
@@ -150,3 +150,9 @@ class SSP(gym.Env):
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
+
+
+# %%
+
+
+# %%

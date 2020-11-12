@@ -15,7 +15,7 @@ def run_one_episode(env):
             break
     
     return sum_reward
-
+#%%
 env = gym.make("ssp-v0")
 sum_reward = run_one_episode(env)
 
